@@ -71,29 +71,30 @@ public class SortYamlAction extends AnAction {
     return sortedMap;
   }
 
-  public void sortMapRecursive(Map.Entry<String, Object> entry) {
+public void sortMapRecursive(Map.Entry<String, Object> entry) {
     final Object val = entry.getValue();
     if (val instanceof Map) {
-      final Map<String, Object> value = sortByKey(
-          (Map<String, Object>) val);
-      entry.setValue(value);
-      for (Map.Entry<String, Object> recurEntry : value.entrySet()) {
-        sortMapRecursive(recurEntry);
-      }
-    } else if (val instanceof ArrayList) {
-      for (int i = 0; i < ((ArrayList) val).size(); i++) {
-        Object listValue = ((ArrayList) val).get(i);
-        if (listValue instanceof Map) {
-          final Map<String, Object> value = sortByKey((Map<String, Object>) listValue);
-          ((ArrayList) val).set(i, value);
-          for (Map.Entry<?, ?> recurEntry : value.entrySet()) {
-            sortMapRecursive((Map.Entry<String, Object>) recurEntry);
-          }
+        final Map<String, Object> value = sortByKey((Map<String, Object>) val);
+        entry.setValue(value);
+        for (Map.Entry<String, Object> recurEntry : value.entrySet()) {
+            sortMapRecursive(recurEntry);
         }
-      }
-      entry.setValue(val);
+    } else if (val instanceof ArrayList) {
+        for (int i = 0; i < ((ArrayList) val).size(); i++) {
+            Object listValue = ((ArrayList) val).get(i);
+            if (listValue instanceof Map) {
+                final Map<String, Object> value = sortByKey((Map<String, Object>) listValue);
+                ((ArrayList) val).set(i, value);
+                for (Map.Entry<?, ?> recurEntry : value.entrySet()) {
+                    if (recurEntry.getKey() instanceof String && recurEntry.getValue() instanceof Object) {
+                        sortMapRecursive((Map.Entry<String, Object>) recurEntry);
+                    }
+                }
+            }
+        }
+        entry.setValue(val);
     }
-  }
+}
 
   private <K extends String, V> Map<K, V> sortByKey(Map<K, V> map) {
     List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
