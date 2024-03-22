@@ -29,12 +29,17 @@ public class SortYamlAction extends AnAction {
 
   @Override
   public void update(AnActionEvent e) {
-    PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
-    final String defaultExtension = psiFile.getFileType().getDefaultExtension();
-
-    Project project = e.getProject();
-    e.getPresentation().setEnabledAndVisible(
-        project != null && (defaultExtension.equals("yml") || defaultExtension.equals("yaml")));
+      PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
+      Project project = e.getProject();
+  
+      if (project != null && psiFile != null) {
+          final String defaultExtension = psiFile.getFileType().getDefaultExtension();
+          e.getPresentation().setEnabledAndVisible(
+              defaultExtension.equals("yml") || defaultExtension.equals("yaml")
+          );
+      } else {
+          e.getPresentation().setEnabledAndVisible(false);
+      }
   }
 
   @Override
